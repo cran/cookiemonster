@@ -1,0 +1,25 @@
+Package: cookiemonster
+Title: Your Friendly Solution to Managing Browser Cookies
+Version: 0.0.1
+Authors@R: 
+    person(given = "Johannes B.",
+           family = "Gruber",
+           email = "JohannesB.Gruber@gmail.com", 
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-9177-1772"))
+Description: A convenient tool to store and format browser cookies and use them 
+    in 'HTTP' requests (for example, through 'httr2', 'httr' or 'curl').
+License: GPL (>= 3)
+Encoding: UTF-8
+RoxygenNote: 7.2.3
+Suggests: curl, knitr, rmarkdown, spelling, testthat (>= 3.0.0), withr
+VignetteBuilder: knitr
+Imports: cli, openssl, rappdirs, stringi, tibble, urltools, vctrs
+Config/testthat/edition: 3
+Language: en-GB
+NeedsCompilation: no
+Packaged: 2023-09-22 11:59:02 UTC; johannes
+Author: Johannes B. Gruber [aut, cre] (<https://orcid.org/0000-0001-9177-1772>)
+Maintainer: Johannes B. Gruber <JohannesB.Gruber@gmail.com>
+Repository: CRAN
+Date/Publication: 2023-09-23 15:00:02 UTC
