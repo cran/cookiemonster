@@ -5,9 +5,15 @@
 #' select your desired output format.
 #'
 #' @param domain A character string of the domain to retrieve cookies for.
+#'   Accepts regular expression depending on the value of \code{fixed}.
+#' @param key An optional filter to retrieve only certain cookies by matching
+#'   certain keys/names. Accepts regular expression depending on the value of
+#'   \code{fixed}.
 #' @param jar A character string of the path to the cookie jar (the default is
 #'   to use \code{default_jar()} to get a suitable directory).
 #' @param as A character string of the type of output to return.
+#' @param fixed If \code{TRUE}, \code{domain} and \code{key} are matched as is.
+#'   If either \code{domain} or \code{key}, only those values are treated as is.
 #' @returns Depending on the value of \code{as}, returns either a data frame, a
 #'   character string, or a named vector.
 #'
@@ -19,8 +25,8 @@
 #'   \item{\strong{vector:}} is used by \code{httr}.
 #' }
 #'
-#' See \code{vignette("cookies", "cookiemonster")} for how to use cookies with
-#' these packages.
+#'   See \code{vignette("cookies", "cookiemonster")} for how to use cookies with
+#'   these packages.
 #'
 #' @note Your cookies are saved in an encrypted file. See \link{encrypt_vec} for
 #'   more info.
@@ -29,12 +35,26 @@
 #' @export
 #'
 #' @examples
+#' # to conform with CRAN policies, examples use a temporary location. Do not use the options like this
+#' options(cookie_dir = tempdir())
+#'
 #' # put some cookies in the jar
 #' add_cookies(cookiestring = "chococookie=delicious", domain = "example.com")
 #' # Reach into your cookie jar and enjoy!
 #' get_cookies("example.com")
+#' # put different cookies into the jar (overwrites previous)
+#' add_cookies(cookiestring = "oatmeal=delicious; peanutbutter=delicious", domain = "example.com")
+#' add_cookies(cookiestring = "snickerdoodle=delicious", domain = "another.example.com")
+#' # only get cookies for example.com, not another.example.com
+#' get_cookies("^example.com")
+#' # only get some cookies from example.com
+#' get_cookies(domain = "^example.com", key = "peanut")
 #' @seealso \code{\link{add_cookies}}
-get_cookies <- function(domain, jar = default_jar(), as = c("data.frame", "string", "vector")) {
+get_cookies <- function(domain,
+                        key = "",
+                        jar = default_jar(),
+                        as = c("data.frame", "string", "vector"),
+                        fixed = FALSE) {
 
   as <- match.arg(as)
   f <- file.path(jar, paste0("cookies.rds"))
@@ -45,7 +65,9 @@ get_cookies <- function(domain, jar = default_jar(), as = c("data.frame", "strin
    ))
   }
   cookies <- readRDS(f)
-  sel <- stringi::stri_detect_regex(cookies$domain, paste0(urltools::domain(domain), "$"))
+
+  sel <- select_cookies(cookies, domain, key, fixed)
+
   out <- cookies[sel, ]
   out$value <- decrypt_vec(out$value)
 
@@ -63,10 +85,38 @@ get_cookies <- function(domain, jar = default_jar(), as = c("data.frame", "strin
 #' @noRd
 prep_cookies <- function(tbl, as_list = FALSE) {
   if (nrow(tbl) > 0) {
-    if (!as_list) {
-      return(paste0(tbl$name, "=", tbl$value, collapse = "; "))
-    } else {
+    if (as_list) {
       return(stats::setNames(tbl$value, tbl$name))
+    } else {
+      return(paste0(tbl$name, "=", tbl$value, collapse = "; "))
+    }
+  } else {
+    if (as_list) {
+      return(list())
+    } else {
+      return("")
     }
   }
+}
+
+
+select_cookies <- function(cookies, domain, key, fixed) {
+  if (length(domain) > 1L) {
+    cli::cli_abort("{.code domain} must be a string of length 1")
+  }
+
+  if (isFALSE(fixed)) {
+    sel <- grepl(domain, cookies$domain, perl = TRUE)
+    sel[sel] <- grepl(key, cookies$name[sel], perl = TRUE) * sel[sel]
+  } else if (fixed == "domain") {
+    sel <- grepl(domain, cookies$domain, fixed = TRUE)
+    sel[sel] <- grepl(key, cookies$name[sel], perl = TRUE) * sel[sel]
+  } else if (fixed == "key") {
+    sel <- grepl(domain, cookies$domain, perl = TRUE)
+    sel[sel] <- grepl(key, cookies$name[sel], fixed = TRUE) * sel[sel]
+  } else {
+    sel <- grepl(domain, cookies$domain, fixed = TRUE)
+    sel[sel] <- grepl(key, cookies$name[sel], fixed = TRUE) * sel[sel]
+  }
+  as.logical(sel)
 }

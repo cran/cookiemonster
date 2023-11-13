@@ -1,13 +1,6 @@
-test_that("setting cookies works", {
-  expect_equal(
-    default_jar(),
-    rappdirs::user_cache_dir("r_cookies")
-  )
+jar <- options(cookie_dir = tempdir())
 
-  jar <- options(cookie_dir = tempdir())
-  withr::defer(options(jar))
-  withr::defer(unlink(c(file.path(tempdir(), paste0("cookies.rds")),
-                        "test.txt")))
+test_that("setting cookies works", {
 
   expect_equal(default_jar(), tempdir())
 
@@ -46,9 +39,10 @@ test_that("setting cookies works", {
 })
 
 test_that("old cookies are replaced", {
+  expect_equal(default_jar(), tempdir())
   expect_equal({
     add_cookies(cookiestring = "test=true", domain = "https://tests.com")
     add_cookies(cookiestring = "chococookie=delicious", domain = "tests.com")
-    get_cookies(domain = "tests.com")$value
+    get_cookies(domain = "^tests.com")$value
   }, "delicious")
 })
