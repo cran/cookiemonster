@@ -1,6 +1,6 @@
 Package: cookiemonster
 Title: Your Friendly Solution to Managing Browser Cookies
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: 
     person(given = "Johannes B.",
            family = "Gruber",
@@ -20,8 +20,8 @@ Imports: cli, openssl, rappdirs, stringi, tibble, urltools, vctrs
 Config/testthat/edition: 3
 Language: en-GB
 NeedsCompilation: no
-Packaged: 2023-11-13 08:20:33 UTC; johannes
+Packaged: 2023-11-30 14:48:28 UTC; johannes
 Author: Johannes B. Gruber [aut, cre] (<https://orcid.org/0000-0001-9177-1772>)
 Maintainer: Johannes B. Gruber <JohannesB.Gruber@gmail.com>
 Repository: CRAN
-Date/Publication: 2023-11-13 15:13:20 UTC
+Date/Publication: 2023-11-30 15:20:05 UTC

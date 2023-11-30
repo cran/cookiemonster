@@ -395,7 +395,7 @@ location. To see this location, you can use:</p>
 set the <code>cookie_dir</code> option:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">cookie_dir =</span> <span class="fu">tempdir</span>())</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">default_jar</span>()</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;/tmp/RtmpxE1cVM&quot;</span></span></code></pre></div>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;/tmp/RtmpAiSsTH&quot;</span></span></code></pre></div>
 <p>To revert back to the original cookie storage location:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">cookie_dir =</span> <span class="cn">NULL</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">default_jar</span>()</span>
@@ -444,7 +444,7 @@ cookies were send (hooray!).</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">library</span>(httr)</span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">GET</span>(<span class="st">&quot;https://hb.cran.dev/cookies/set&quot;</span>, <span class="fu">set_cookies</span>(<span class="fu">get_cookies</span>(<span class="st">&quot;hb.cran.dev&quot;</span>, <span class="at">as =</span> <span class="st">&quot;vector&quot;</span>)))</span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt; Response [https://hb.cran.dev/cookies]</span></span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt;   Date: 2023-11-13 08:20</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt;   Date: 2023-11-30 14:48</span></span>
 <span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt;   Status: 200</span></span>
 <span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt;   Content-Type: application/json</span></span>
 <span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt;   Size: 88 B</span></span>
