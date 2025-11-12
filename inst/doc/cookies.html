@@ -48,8 +48,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -373,7 +374,7 @@ store cookies for further use. First, let’s load the package:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(cookiemonster)</span></code></pre></div>
 <p>To use cookies with the <code>cookiemonster</code>, you will need to
 export the necessary cookies from your browser after visiting or logging
-into a website. To do this, you can use browser extensions like <a href="https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc">“Get
+into a website. To do this, you can use browser extensions like <a href="https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc">“Get
 cookies.txt”</a> for Chromium-based browsers or <a href="https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/">“cookies.txt”</a>
 for Firefox.</p>
 <p>Let’s import an example cookie file provided by the
@@ -382,32 +383,54 @@ for Firefox.</p>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">from =</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;cookies.txt&quot;</span>, <span class="at">package =</span> <span class="st">&quot;cookiemonster&quot;</span>),</span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">to =</span> <span class="st">&quot;.&quot;</span></span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>)</span></code></pre></div>
-<p>Now, let’s add the cookies from the file to our cookie jar:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">add_cookies</span>(<span class="at">cookiefile =</span> <span class="st">&quot;cookies.txt&quot;</span>)</span></code></pre></div>
+<p>This is how the file looks like:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">readLines</span>(<span class="st">&quot;cookies.txt&quot;</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>#&gt; # Netscape HTTP Cookie File
+#&gt; # http://curl.haxx.se/rfc/cookie_spec.html
+#&gt; # This is a generated file!  Do not edit.
+#&gt; 
+#&gt; hb.cran.dev  FALSE   /   FALSE   Inf test    true
+#&gt; hb.cran.dev  FALSE   /   FALSE   Inf cookies allow
+#&gt; hb.cran.dev  FALSE   /   FALSE   Inf easy    true</code></pre>
+<p>Now, let’s add the cookies from this file to our cookie jar:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">add_cookies</span>(<span class="at">cookiefile =</span> <span class="st">&quot;cookies.txt&quot;</span>)</span></code></pre></div>
+<p>You can also import cookies directly from your browser (only works
+with Firefox at the moment):</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>cookies <span class="ot">&lt;-</span> <span class="fu">get_cookies_from_browser</span>(<span class="at">browser =</span> <span class="st">&quot;Firefox&quot;</span>) </span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">store_cookies</span>(cookies)</span></code></pre></div>
+<p>If you are working with <code>rvest</code> version 1.0.4 or above,
+you might also know about live browser sessions:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>sess <span class="ot">&lt;-</span> rvest<span class="sc">::</span><span class="fu">read_html_live</span>(<span class="st">&quot;https://vu.nl&quot;</span>)</span></code></pre></div>
+<p>You can actually open a browser using <code>sess$view()</code>. To
+save the cookies from this session, e.g., after logging in on a website,
+simply run:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">add_cookies</span>(<span class="at">session =</span> sess)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt; ✔ Cookies for vu.nl put in the jar!</span></span></code></pre></div>
 </div>
 <div id="default-cookie-storage" class="section level2">
 <h2>Default Cookie Storage</h2>
 <p>The <code>cookiemonster</code> package stores cookies in a default
 location. To see this location, you can use:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">default_jar</span>()</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; [1] &quot;~/.cache/r_cookies&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">default_jar</span>()</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">#&gt; [1] &quot;~/.cache/r_cookies&quot;</span></span></code></pre></div>
 <p>If you want to change the default cookie storage location, you can
 set the <code>cookie_dir</code> option:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">cookie_dir =</span> <span class="fu">tempdir</span>())</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">default_jar</span>()</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;/tmp/RtmpAiSsTH&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">cookie_dir =</span> <span class="fu">tempdir</span>())</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">default_jar</span>()</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;/tmp/RtmpoVQQib&quot;</span></span></code></pre></div>
 <p>To revert back to the original cookie storage location:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">cookie_dir =</span> <span class="cn">NULL</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">default_jar</span>()</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;~/.cache/r_cookies&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">cookie_dir =</span> <span class="cn">NULL</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">default_jar</span>()</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;~/.cache/r_cookies&quot;</span></span></code></pre></div>
 <p>To retrieve cookies for a specific domain:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">get_cookies</span>(<span class="st">&quot;hb.cran.dev&quot;</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 7</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt;   domain      flag  path  secure expiration name    value</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;lgl&gt; &lt;chr&gt; &lt;lgl&gt;  &lt;dttm&gt;     &lt;chr&gt;   &lt;chr&gt;</span></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; 1 hb.cran.dev FALSE /     FALSE  Inf Inf    test    true </span></span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; 2 hb.cran.dev FALSE /     FALSE  Inf Inf    cookies allow</span></span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; 3 hb.cran.dev FALSE /     FALSE  Inf Inf    easy    true</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">get_cookies</span>(<span class="st">&quot;hb.cran.dev&quot;</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 7</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt;   domain      flag  path  secure expiration name    value</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;lgl&gt; &lt;chr&gt; &lt;lgl&gt;  &lt;dttm&gt;     &lt;chr&gt;   &lt;chr&gt;</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt; 1 hb.cran.dev FALSE /     FALSE  Inf        test    true </span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt; 2 hb.cran.dev FALSE /     FALSE  Inf        cookies allow</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; 3 hb.cran.dev FALSE /     FALSE  Inf        easy    true</span></span></code></pre></div>
 <p>Note that his function uses regular expressions to match the domain
 by default.</p>
 </div>
@@ -417,22 +440,39 @@ by default.</p>
 <h3>Using Stored Cookies with <code>httr2</code></h3>
 <p>Now let’s see how to use stored cookies with the <code>httr2</code>
 package:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">library</span>(httr2)</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>resp <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">&quot;https://hb.cran.dev/cookies/set&quot;</span>) <span class="sc">|&gt;</span> <span class="co"># start a request</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="fu">req_options</span>(<span class="at">cookie =</span> <span class="fu">get_cookies</span>(<span class="st">&quot;hb.cran.dev&quot;</span>, <span class="at">as =</span> <span class="st">&quot;string&quot;</span>)) <span class="sc">|&gt;</span> <span class="co"># add cookies to be sent with it</span></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="fu">req_perform</span>() <span class="co"># perform the request</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>resp <span class="sc">|&gt;</span> </span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  <span class="fu">resp_body_json</span>()</span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; $cookies</span></span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; $cookies$cookies</span></span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; [1] &quot;allow&quot;</span></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; $cookies$easy</span></span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; [1] &quot;true&quot;</span></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; $cookies$test</span></span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; [1] &quot;true&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">library</span>(httr2)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>resp <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">&quot;https://hb.cran.dev/cookies/set&quot;</span>) <span class="sc">|&gt;</span> <span class="co"># start a request</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="fu">req_options</span>(<span class="at">cookie =</span> <span class="fu">get_cookies</span>(<span class="st">&quot;hb.cran.dev&quot;</span>, <span class="at">as =</span> <span class="st">&quot;string&quot;</span>)) <span class="sc">|&gt;</span> <span class="co"># add cookies to be sent with it</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>  <span class="fu">req_perform</span>() <span class="co"># perform the request</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>resp <span class="sc">|&gt;</span> </span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>  <span class="fu">resp_body_json</span>()</span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; $cookies</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; $cookies$cookies</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt; [1] &quot;allow&quot;</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt; $cookies$easy</span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt; [1] &quot;true&quot;</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co">#&gt; $cookies$test</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt; [1] &quot;true&quot;</span></span></code></pre></div>
+<p>For convenience, there is also a shorthand that automatically uses
+all cookies for the domain in the <code>request</code>:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>resp <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">&quot;https://hb.cran.dev/cookies/set&quot;</span>) <span class="sc">|&gt;</span> <span class="co"># start a request</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  <span class="fu">req_cookiemonster_set</span>() <span class="sc">|&gt;</span> <span class="co"># add cookies to be sent with it</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="fu">req_perform</span>() <span class="co"># perform the request</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>resp <span class="sc">|&gt;</span> </span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>  <span class="fu">resp_body_json</span>()</span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co">#&gt; $cookies</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co">#&gt; $cookies$cookies</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt; [1] &quot;allow&quot;</span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; $cookies$easy</span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt; [1] &quot;true&quot;</span></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="co">#&gt; $cookies$test</span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co">#&gt; [1] &quot;true&quot;</span></span></code></pre></div>
 <p>As you can see, the individual cookie values we see above are
 returned correctly. This is because the server at <a href="https://hb.cran.dev" class="uri">https://hb.cran.dev</a> is
 configured to echo requests send to it. It shows us that the correct
@@ -441,20 +481,20 @@ cookies were send (hooray!).</p>
 <div id="using-stored-cookies-with-httr" class="section level3">
 <h3>Using Stored Cookies with <code>httr</code></h3>
 <p>To use stored cookies with the legacy <code>httr</code> package:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">library</span>(httr)</span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">GET</span>(<span class="st">&quot;https://hb.cran.dev/cookies/set&quot;</span>, <span class="fu">set_cookies</span>(<span class="fu">get_cookies</span>(<span class="st">&quot;hb.cran.dev&quot;</span>, <span class="at">as =</span> <span class="st">&quot;vector&quot;</span>)))</span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt; Response [https://hb.cran.dev/cookies]</span></span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt;   Date: 2023-11-30 14:48</span></span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt;   Status: 200</span></span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt;   Content-Type: application/json</span></span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt;   Size: 88 B</span></span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; {</span></span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt;   &quot;cookies&quot;: {</span></span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt;     &quot;cookies&quot;: &quot;allow&quot;, </span></span>
-<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt;     &quot;easy&quot;: &quot;true&quot;, </span></span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt;     &quot;test&quot;: &quot;true&quot;</span></span>
-<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt;   }</span></span>
-<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt; }</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">library</span>(httr)</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="fu">GET</span>(<span class="st">&quot;https://hb.cran.dev/cookies/set&quot;</span>, <span class="fu">set_cookies</span>(<span class="fu">get_cookies</span>(<span class="st">&quot;hb.cran.dev&quot;</span>, <span class="at">as =</span> <span class="st">&quot;vector&quot;</span>)))</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co">#&gt; Response [https://hb.cran.dev/cookies]</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="co">#&gt;   Date: 2025-11-12 22:25</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="co">#&gt;   Status: 200</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co">#&gt;   Content-Type: application/json</span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt;   Size: 88 B</span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co">#&gt; {</span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co">#&gt;   &quot;cookies&quot;: {</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="co">#&gt;     &quot;cookies&quot;: &quot;allow&quot;, </span></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co">#&gt;     &quot;easy&quot;: &quot;true&quot;, </span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a><span class="co">#&gt;     &quot;test&quot;: &quot;true&quot;</span></span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a><span class="co">#&gt;   }</span></span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a><span class="co">#&gt; }</span></span></code></pre></div>
 <p>This code uses the ‘httr’ library to set cookies from the ‘<a href="https://hb.cran.dev" class="uri">https://hb.cran.dev</a>’ website
 (a test website for development). The <code>GET</code> function is used
 to set the cookies, and the <code>set_cookies</code> function add
@@ -467,34 +507,34 @@ cookies to the request.</p>
 it. You can also use <code>curl</code> directly though (which is only
 recommended for advanced users though). To make the same request as
 above, we can use this code:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">library</span>(curl)</span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">new_handle</span>()</span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">handle_setopt</span>(h, <span class="at">cookie =</span> <span class="fu">get_cookies</span>(<span class="st">&quot;hb.cran.dev&quot;</span>, <span class="at">as =</span> <span class="st">&quot;string&quot;</span>))</span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>resp <span class="ot">&lt;-</span> <span class="fu">curl_fetch_memory</span>(<span class="st">&quot;https://hb.cran.dev/cookies/set&quot;</span>, <span class="at">handle =</span> h)</span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(<span class="fu">rawToChar</span>(resp<span class="sc">$</span>content))</span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; $cookies</span></span>
-<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt; $cookies$cookies</span></span>
-<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; [1] &quot;allow&quot;</span></span>
-<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co">#&gt; $cookies$easy</span></span>
-<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#&gt; [1] &quot;true&quot;</span></span>
-<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt; $cookies$test</span></span>
-<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt; [1] &quot;true&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">library</span>(curl)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>h <span class="ot">&lt;-</span> <span class="fu">new_handle</span>()</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="fu">handle_setopt</span>(h, <span class="at">cookie =</span> <span class="fu">get_cookies</span>(<span class="st">&quot;hb.cran.dev&quot;</span>, <span class="at">as =</span> <span class="st">&quot;string&quot;</span>))</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>resp <span class="ot">&lt;-</span> <span class="fu">curl_fetch_memory</span>(<span class="st">&quot;https://hb.cran.dev/cookies/set&quot;</span>, <span class="at">handle =</span> h)</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>(<span class="fu">rawToChar</span>(resp<span class="sc">$</span>content))</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co">#&gt; $cookies</span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co">#&gt; $cookies$cookies</span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="co">#&gt; [1] &quot;allow&quot;</span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="co">#&gt; $cookies$easy</span></span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a><span class="co">#&gt; [1] &quot;true&quot;</span></span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a><span class="co">#&gt; $cookies$test</span></span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a><span class="co">#&gt; [1] &quot;true&quot;</span></span></code></pre></div>
 <p>If the <code>curl</code> response contains new cookies:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>h2 <span class="ot">&lt;-</span> <span class="fu">new_handle</span>()</span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>resp <span class="ot">&lt;-</span> <span class="fu">curl_fetch_memory</span>(<span class="st">&quot;https://hb.cran.dev/cookies/set?new_cookies=moo&quot;</span>, <span class="at">handle =</span> h2)</span>
-<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="fu">handle_cookies</span>(h2)</span>
-<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt;        domain  flag path secure expiration        name value</span></span>
-<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; 1 hb.cran.dev FALSE    /  FALSE        Inf new_cookies   moo</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>h2 <span class="ot">&lt;-</span> <span class="fu">new_handle</span>()</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>resp <span class="ot">&lt;-</span> <span class="fu">curl_fetch_memory</span>(<span class="st">&quot;https://hb.cran.dev/cookies/set?new_cookies=moo&quot;</span>, <span class="at">handle =</span> h2)</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="fu">handle_cookies</span>(h2)</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co">#&gt;        domain  flag path secure expiration        name value</span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="co">#&gt; 1 hb.cran.dev FALSE    /  FALSE        Inf new_cookies   moo</span></span></code></pre></div>
 <p>Use <code>store_cookies</code> to store them in your jar:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>new_cookies <span class="ot">&lt;-</span> <span class="fu">handle_cookies</span>(h2)</span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">store_cookies</span>(new_cookies)</span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="fu">get_cookies</span>(<span class="st">&quot;hb.cran.dev&quot;</span>)</span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 7</span></span>
-<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt;   domain      flag  path  secure expiration name        value</span></span>
-<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;lgl&gt; &lt;chr&gt; &lt;lgl&gt;  &lt;dttm&gt;     &lt;chr&gt;       &lt;chr&gt;</span></span>
-<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; 1 hb.cran.dev FALSE /     FALSE  Inf Inf    new_cookies moo</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>new_cookies <span class="ot">&lt;-</span> <span class="fu">handle_cookies</span>(h2)</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="fu">store_cookies</span>(new_cookies)</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="fu">get_cookies</span>(<span class="st">&quot;hb.cran.dev&quot;</span>)</span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 7</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="co">#&gt;   domain      flag  path  secure expiration name        value</span></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;       &lt;lgl&gt; &lt;chr&gt; &lt;lgl&gt;  &lt;dttm&gt;     &lt;chr&gt;       &lt;chr&gt;</span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="co">#&gt; 1 hb.cran.dev FALSE /     FALSE  Inf        new_cookies moo</span></span></code></pre></div>
 <p>Keep in mind that adding cookies for a domain will replace all
 previously stored cookies for that domain by default.</p>
 <p>Now that you have an understanding of how the

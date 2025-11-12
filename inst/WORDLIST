@@ -1,10 +1,13 @@
 CMD
 Codecov
 HTTPonly
-Lifecycle
 Renviron
 cookiefile
+cookiejar
 cookiestring
 httr
 httr’
+req
+rvest
+tibble
 ’

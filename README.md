@@ -5,8 +5,6 @@
 
 <!-- badges: start -->
 
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/cookiemonster)](https://CRAN.R-project.org/package=cookiemonster)
 [![R-CMD-check](https://github.com/JBGruber/cookiemonster/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JBGruber/cookiemonster/actions/workflows/R-CMD-check.yaml)
@@ -76,7 +74,7 @@ library(cookiemonster)
 To use cookies with the `cookiemonster`, you will need to export the
 necessary cookies from your browser after visiting or logging into a
 website. To do this, you can use browser extensions like [“Get
-cookies.txt”](https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc)
+cookies.txt”](https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc)
 for Chromium-based browsers or
 [“cookies.txt”](https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/)
 for Firefox.
@@ -91,10 +89,48 @@ file.copy(
 )
 ```
 
-Now, let’s add the cookies from the file to our cookie jar:
+This is how the file looks like:
+
+``` r
+readLines("cookies.txt") |> 
+  cat(sep = "\n")
+```
+
+    #> # Netscape HTTP Cookie File
+    #> # http://curl.haxx.se/rfc/cookie_spec.html
+    #> # This is a generated file!  Do not edit.
+    #> 
+    #> hb.cran.dev  FALSE   /   FALSE   Inf test    true
+    #> hb.cran.dev  FALSE   /   FALSE   Inf cookies allow
+    #> hb.cran.dev  FALSE   /   FALSE   Inf easy    true
+
+Now, let’s add the cookies from this file to our cookie jar:
 
 ``` r
 add_cookies(cookiefile = "cookies.txt")
+```
+
+You can also import cookies directly from your browser (only works with
+Firefox at the moment):
+
+``` r
+cookies <- get_cookies_from_browser(browser = "Firefox") 
+store_cookies(cookies)
+```
+
+If you are working with `rvest` version 1.0.4 or above, you might also
+know about live browser sessions:
+
+``` r
+sess <- rvest::read_html_live("https://vu.nl")
+```
+
+You can actually open a browser using `sess$view()`. To save the cookies
+from this session, e.g., after logging in on a website, simply run:
+
+``` r
+add_cookies(session = sess)
+#> ✔ Cookies for vu.nl put in the jar!
 ```
 
 ## Default Cookie Storage
@@ -113,7 +149,7 @@ the `cookie_dir` option:
 ``` r
 options(cookie_dir = tempdir())
 default_jar()
-#> [1] "/tmp/RtmpaZmtG5"
+#> [1] "/tmp/RtmpTS3Qvg"
 ```
 
 To revert back to the original cookie storage location:
@@ -131,9 +167,9 @@ get_cookies("hb.cran.dev")
 #> # A tibble: 3 × 7
 #>   domain      flag  path  secure expiration name    value
 #>   <chr>       <lgl> <chr> <lgl>  <dttm>     <chr>   <chr>
-#> 1 hb.cran.dev FALSE /     FALSE  Inf Inf    test    true 
-#> 2 hb.cran.dev FALSE /     FALSE  Inf Inf    cookies allow
-#> 3 hb.cran.dev FALSE /     FALSE  Inf Inf    easy    true
+#> 1 hb.cran.dev FALSE /     FALSE  Inf        test    true 
+#> 2 hb.cran.dev FALSE /     FALSE  Inf        cookies allow
+#> 3 hb.cran.dev FALSE /     FALSE  Inf        easy    true
 ```
 
 Note that his function uses regular expressions to match the domain by
@@ -164,6 +200,27 @@ resp |>
 #> [1] "true"
 ```
 
+For convenience, there is also a shorthand that automatically uses all
+cookies for the domain in the `request`:
+
+``` r
+resp <- request("https://hb.cran.dev/cookies/set") |> # start a request
+  req_cookiemonster_set() |> # add cookies to be sent with it
+  req_perform() # perform the request
+
+resp |> 
+  resp_body_json()
+#> $cookies
+#> $cookies$cookies
+#> [1] "allow"
+#> 
+#> $cookies$easy
+#> [1] "true"
+#> 
+#> $cookies$test
+#> [1] "true"
+```
+
 As you can see, the individual cookie values we see above are returned
 correctly. This is because the server at <https://hb.cran.dev> is
 configured to echo requests send to it. It shows us that the correct
@@ -177,7 +234,7 @@ To use stored cookies with the legacy `httr` package:
 library(httr)
 GET("https://hb.cran.dev/cookies/set", set_cookies(get_cookies("hb.cran.dev", as = "vector")))
 #> Response [https://hb.cran.dev/cookies]
-#>   Date: 2023-11-12 19:54
+#>   Date: 2025-11-12 21:50
 #>   Status: 200
 #>   Content-Type: application/json
 #>   Size: 88 B
@@ -238,7 +295,7 @@ get_cookies("hb.cran.dev")
 #> # A tibble: 1 × 7
 #>   domain      flag  path  secure expiration name        value
 #>   <chr>       <lgl> <chr> <lgl>  <dttm>     <chr>       <chr>
-#> 1 hb.cran.dev FALSE /     FALSE  Inf Inf    new_cookies moo
+#> 1 hb.cran.dev FALSE /     FALSE  Inf        new_cookies moo
 ```
 
 Keep in mind that adding cookies for a domain will replace all

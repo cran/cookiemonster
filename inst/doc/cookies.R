@@ -5,6 +5,7 @@ knitr::opts_chunk$set(
   message = FALSE,
   eval = TRUE
 )
+# write to a temporary jar
 options(cookie_dir = tempdir())
 is_available <- function(p) requireNamespace(p, quietly = TRUE)
 curl_available <- is_available("curl")
@@ -15,19 +16,39 @@ httr2_available <- is_available("httr2")
 library(cookiemonster)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  file.copy(
-#    from = system.file("extdata", "cookies.txt", package = "cookiemonster"),
-#    to = "."
-#  )
+# file.copy(
+#   from = system.file("extdata", "cookies.txt", package = "cookiemonster"),
+#   to = "."
+# )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  add_cookies(cookiefile = "cookies.txt")
+# readLines("cookies.txt") |>
+#   cat(sep = "\n")
+
+## ----echo=FALSE---------------------------------------------------------------
+system.file("extdata", "cookies.txt", package = "cookiemonster") |> 
+  readLines() |> 
+  cat(sep = "\n")
+
+## ----eval=FALSE---------------------------------------------------------------
+# add_cookies(cookiefile = "cookies.txt")
 
 ## ----echo=FALSE---------------------------------------------------------------
 add_cookies(
   cookiefile = system.file("extdata", "cookies.txt", package = "cookiemonster"), 
   confirm = TRUE
 )
+
+## ----eval=FALSE---------------------------------------------------------------
+# cookies <- get_cookies_from_browser(browser = "Firefox")
+# store_cookies(cookies)
+
+## ----eval=FALSE---------------------------------------------------------------
+# sess <- rvest::read_html_live("https://vu.nl")
+
+## ----eval=FALSE---------------------------------------------------------------
+# add_cookies(session = sess)
+# #> ✔ Cookies for vu.nl put in the jar!
 
 ## ----echo=FALSE---------------------------------------------------------------
 options(cookie_dir = NULL)
@@ -53,6 +74,14 @@ get_cookies("hb.cran.dev")
 library(httr2)
 resp <- request("https://hb.cran.dev/cookies/set") |> # start a request
   req_options(cookie = get_cookies("hb.cran.dev", as = "string")) |> # add cookies to be sent with it
+  req_perform() # perform the request
+
+resp |> 
+  resp_body_json()
+
+## ----eval=httr2_available-----------------------------------------------------
+resp <- request("https://hb.cran.dev/cookies/set") |> # start a request
+  req_cookiemonster_set() |> # add cookies to be sent with it
   req_perform() # perform the request
 
 resp |> 

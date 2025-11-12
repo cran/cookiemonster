@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
   message = FALSE,
   eval = TRUE
 )
+# write to a temporary jar
 options(cookie_dir = tempdir())
 is_available <- function(p) requireNamespace(p, quietly = TRUE)
 curl_available <- is_available("curl")
@@ -47,7 +48,7 @@ library(cookiemonster)
 ```
 
 To use cookies with the `cookiemonster`, you will need to export the necessary cookies from your browser after visiting or logging into a website.
-To do this, you can use browser extensions like ["Get cookies.txt"](https://chrome.google.com/webstore/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc) for Chromium-based browsers or ["cookies.txt"](https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/) for Firefox.
+To do this, you can use browser extensions like ["Get cookies.txt"](https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc) for Chromium-based browsers or ["cookies.txt"](https://addons.mozilla.org/en-US/firefox/addon/cookies-txt/) for Firefox.
 
 Let's import an example cookie file provided by the `cookiemonster` package:
 
@@ -58,7 +59,20 @@ file.copy(
 )
 ```
 
-Now, let's add the cookies from the file to our cookie jar:
+This is how the file looks like:
+
+```{r eval=FALSE}
+readLines("cookies.txt") |> 
+  cat(sep = "\n")
+```
+
+```{r echo=FALSE}
+system.file("extdata", "cookies.txt", package = "cookiemonster") |> 
+  readLines() |> 
+  cat(sep = "\n")
+```
+
+Now, let's add the cookies from this file to our cookie jar:
 
 ```{r eval=FALSE}
 add_cookies(cookiefile = "cookies.txt")
@@ -70,6 +84,29 @@ add_cookies(
   confirm = TRUE
 )
 ```
+
+You can also import cookies directly from your browser (only works with Firefox at the moment):
+
+```{r eval=FALSE}
+cookies <- get_cookies_from_browser(browser = "Firefox") 
+store_cookies(cookies)
+```
+
+
+If you are working with `rvest` version 1.0.4 or above, you might also know about live browser sessions:
+
+```{r eval=FALSE}
+sess <- rvest::read_html_live("https://vu.nl")
+```
+
+You can actually open a browser using `sess$view()`.
+To save the cookies from this session, e.g., after logging in on a website, simply run:
+
+```{r eval=FALSE}
+add_cookies(session = sess)
+#> ✔ Cookies for vu.nl put in the jar!
+```
+
 
 ## Default Cookie Storage
 
@@ -126,6 +163,18 @@ resp <- request("https://hb.cran.dev/cookies/set") |> # start a request
 resp |> 
   resp_body_json()
 ```
+
+For convenience, there is also a shorthand that automatically uses all cookies for the domain in the `request`:
+
+```{r eval=httr2_available}
+resp <- request("https://hb.cran.dev/cookies/set") |> # start a request
+  req_cookiemonster_set() |> # add cookies to be sent with it
+  req_perform() # perform the request
+
+resp |> 
+  resp_body_json()
+```
+
 
 As you can see, the individual cookie values we see above are returned correctly.
 This is because the server at https://hb.cran.dev is configured to echo requests send to it.
