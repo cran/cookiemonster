@@ -1,4 +1,4 @@
-1036833d94e96e3627129d610fb97283 *DESCRIPTION
+cb446bc2624c594f58a0f1b6ad3bf4d2 *DESCRIPTION
 45d6d8c998b4c910a1a43018ac4836d7 *NAMESPACE
 e7a4c91e3194d299d2a921aab4fca7eb *NEWS.md
 24cd03c77f7a0fbcb0bad1155f9e396d *R/browser.r
@@ -9,12 +9,12 @@ e7a4c91e3194d299d2a921aab4fca7eb *NEWS.md
 66ccbe51d82ec3c44f836beb4a9410aa *R/set.r
 c7872158aa03e9dae8da87d7614256d1 *R/sysdata.rda
 a090e05de28f9801b6f9d1dc16b00849 *R/utils.r
-25c3559d5c2ce5f954fb60429c119e55 *README.md
+d27dbd3cf211ab445253d554c6f4b21a *README.md
 c333860f26c0494d5901fed39ae2562d *build/vignette.rds
 1f1406c1bf848cc01bb4ae2a533a211e *inst/WORDLIST
 f91e006e35576de1e15693ed82d6297d *inst/doc/cookies.R
 ba70e35fcdb02993170c5ec7c4267ad8 *inst/doc/cookies.Rmd
-92253dfd54102bf1cbbe05694a536924 *inst/doc/cookies.html
+ae47a30a3356529837ab7947b94b0a4b *inst/doc/cookies.html
 f4dd326fdf642e949db919d3239a05c3 *inst/extdata/cookies.txt
 cff3f57d9e38c30548885c77cbb54a0e *man/add_cookies.Rd
 65c1d89219e3aaafc91318ba6a84182f *man/default_jar.Rd
@@ -26,7 +26,7 @@ efe28fb30ca7417d7d423ba80e348e79 *man/encrypt_vec.Rd
 2499ceb0fe3a30d843f10faa09702d95 *man/store_cookies.Rd
 50f330eeca8db092d6807e04457bd06d *tests/spelling.R
 c0cf75f84fbd72ddca19ec4ccb34a5eb *tests/testthat.R
-f2671c3a2f9bd4cd99c7b407280196cb *tests/testthat/test-browser.R
+5b4a95bf72ac0b76dac4b2a63295e1df *tests/testthat/test-browser.R
 a7c16ac2cf7ed2729527292056569a26 *tests/testthat/test-create.R
 96c69402d4e24035ad44d13e40924a25 *tests/testthat/test-delete.R
 625fd5e1bd8e6d7a83719812e64a37bd *tests/testthat/test-encryption.R

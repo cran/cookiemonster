@@ -1,6 +1,6 @@
 Package: cookiemonster
 Title: Your Friendly Solution to Managing Browser Cookies
-Version: 0.0.4
+Version: 0.0.5
 Authors@R: 
     person(given = "Johannes B.",
            family = "Gruber",
@@ -23,9 +23,9 @@ Language: en-GB
 URL: https://github.com/JBGruber/cookiemonster
 BugReports: https://github.com/JBGruber/cookiemonster/issues
 NeedsCompilation: no
-Packaged: 2025-11-12 22:25:14 UTC; johannes
+Packaged: 2025-11-13 08:35:42 UTC; johannes
 Author: Johannes B. Gruber [aut, cre] (ORCID:
     <https://orcid.org/0000-0001-9177-1772>)
 Maintainer: Johannes B. Gruber <JohannesB.Gruber@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-11-12 22:40:02 UTC
+Date/Publication: 2025-11-13 17:40:30 UTC
